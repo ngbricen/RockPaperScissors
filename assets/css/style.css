@@ -1,0 +1,25 @@
+ .jumbotron {
+ 	background-color: #20315A; 
+ 	color: white;
+ }
+
+#message {
+ 	width: 90%;
+  	padding-right: 50px;
+}
+
+.box {
+	border: 1px solid black;
+    height: 200px;
+    margin: 10px;
+}
+
+.gameOptions {
+	border: 1px solid white;
+    height: 150px;
+    margin: 5px;
+}
+
+span {
+	/*text-align: center;*/
+}

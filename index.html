@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  
+  <head>
+    <meta charset="utf-8">
+    <title>Rock Paper Scissors Upgraded</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  	<link rel="stylesheet" type="text/css" href="assets/css/reset.css">
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  	<link rel="stylesheet" type="text/css" href="assets/css/style.css">
+  </head>
+  
+  <body>
+    <div class="container">
+      <div class="jumbotron">
+        <h1 class="text-center"><strong>Rock Paper Scissors</strong></h1>
+      </div>
+      
+      <!-- Area for Message Sending Begin -->
+      <div class="row">
+        <div class="col-md-4">
+        </div>
+        
+        <div class="col-md-8" id="userNameSection">
+          <form class="form-inline">
+            <label class="sr-only" for="submitName">Name</label>
+            <input type="text" class="form-control" id="userName" placeholder="Enter Name">
+            <button class="btn btn-default" id="submitName" type="submit">Start</button>
+          </form> 
+        </div>
+      </div>
+
+      <div class="row text-center">
+        <h3 id="userNameMessage"></h3>
+        <h3 id="turnNameMessage"></h3>
+      </div>
+      <!-- Area for Message Sending End -->
+      <br>
+      
+      <!-- Game Area Begin -->
+      <div class="row">
+        <div class="col-md-1">
+        </div>
+
+        <div class="col-md-3 box text-center" id="user1">
+          <span id="user1Title">Waiting for Player 1</span>
+          <div id="user1Options" class="gameOptions">
+          </div>
+          <span id="user1Score"></span>
+        </div>
+
+        <div class="col-md-3 box text-center" id="results">
+        </div>
+
+        <div class="col-md-3 box text-center" id="user2">
+          <span id="user2Title">Waiting for Player 2</span>
+          <div id="user2Options"  class="gameOptions">
+          </div>
+          <span id="user2Score"></span>
+        </div>        
+      </div>
+      <!-- Game Area End -->
+
+      <br>
+
+      <!-- Area for Message Viewing Begin -->
+      <div class="row">
+        <div class="col-md-2">
+        </div>
+        
+        <div class="col-md-8">
+          <textarea class="form-control" id="message-area" rows="4"></textarea>
+        </div>
+      </div>
+      <!-- Area for Message Viewing End -->
+
+      <br>
+      
+      <!-- Area for Message Sending Begin -->
+      <div class="row">
+        <div class="col-md-2">
+        </div>
+        <div class="col-md-8">
+          <form class="form-inline">
+              <label class="sr-only" for="message">Name</label>
+              <input type="text" class="form-control" id="message">
+              <button class="btn btn-default" id="sendMessage" type="submit">Send</button>
+          </form> 
+        </div>
+      </div>
+      <!-- Area for Message Sending End -->
+
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/4.1.2/firebase.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous">
+  	</script>
+  	<script type="text/javascript" src="assets/javascript/rocklogic.js"></script>    
+  
+
+  </body>
+</html>
