@@ -15,6 +15,9 @@ var database = firebase.database();
 
 // variables 
 var userName;
+var userMessage = "";
+var userNode = "";
+var disconnectMessage = "";
 var userNumber = "";
 var user1Name = "";
 var user1Win = 0;
@@ -102,6 +105,7 @@ database.ref().on("value", function(snapshot) {
 
 			if (sessionStorage.getItem("currentUserName") !== user1Name && turnCount === 2){
 				$("#turnNameMessage").text("It's Your Turn!");
+				$("#user2Options").empty();
 
 				//Display the Rock/Paper/Scissors Options
 				displayGameChoice("#user2Options","user2choices");
@@ -116,6 +120,16 @@ database.ref().on("value", function(snapshot) {
 	  	//When both choices are available and both players have played their turn, we need to display results
 		if (snapshot.child("players/1/choice").exists() && snapshot.child("players/2/choice").exists() && turnCount === 3){
 			displayResults(user1Choice,user2Choice,user1Win,user1Loss,user1Draw, user2Win, user2Loss, user2Draw);
+		}
+
+		//Add Messages on all users windows if the chat exists 
+		if (snapshot.child("chat").exists()){
+			//Empty Text area
+			$("#message").text("");
+			
+			$("#messageArea").text("");
+			userMessage = snapshot.val().chat.message;
+			$("#messageArea").append(userMessage + "\n");
 		}
 	}
   // If any errors are experienced, log them to console.
@@ -161,7 +175,9 @@ $("#submitName").on("click",function(event){
 
 		//Display Message;
 		$("#userNameMessage").html("<h3> Hi " + userName + "! You are player " + userNumber + "</h3>");
-		
+		$("#userNameMessage").attr("user-name",userName);
+		$("#userNameMessage").attr("user-id",userNumber);
+
 		//Display the message and hide the Name entry Section
 		$("#userNameMessage").show();
 		$("#userNameSection").hide();
@@ -176,6 +192,41 @@ $("#submitName").on("click",function(event){
 
 });
 
+//Actions when users enters a message
+$("#sendMessage").on("click",function(event){
+	event.preventDefault();
+
+	//Grab User Input
+	userMessage = $("#messageArea").html() + $("#userNameMessage").attr("user-name") + ": " + $("#message").val().trim();
+
+	disconnectMessage = userMessage + $("#userNameMessage").attr("user-name") + " Disconnected from the chat";
+
+	userNode = "players/" + $("#userNameMessage").attr("user-id");
+
+	//Empty Text area
+	$("#message").val("");
+
+	//Set the turn
+	database.ref("chat").update({
+		message:userMessage
+	});
+
+	//On Disconnect, remove the node of user disconnecting
+	if (userNode === "players/1"){
+		database.ref().onDisconnect().update({
+		  "players/1" : null,
+		  "chat/message":disconnectMessage
+		});
+	}
+	else
+	{
+		database.ref().onDisconnect().update({
+		  "players/2" : null,
+		  "chat/message":disconnectMessage
+		});
+	}
+
+});
 
 //Update the turn count
 function updateCount(){
