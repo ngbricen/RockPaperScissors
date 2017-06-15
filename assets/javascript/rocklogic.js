@@ -126,8 +126,8 @@ database.ref().on("value", function(snapshot) {
 		if (snapshot.child("chat").exists()){
 			//Empty Text area
 			$("#message").text("");
-			
 			$("#messageArea").text("");
+
 			userMessage = snapshot.val().chat.message;
 			$("#messageArea").append(userMessage + "\n");
 		}
@@ -183,7 +183,10 @@ $("#submitName").on("click",function(event){
 		$("#userNameSection").hide();
 		
 		if (userNumber === 2){
-			updateCount();
+		 	//Set the turn
+			database.ref().update({
+				turn:1
+			});		
 		}
 	}
 
@@ -199,7 +202,7 @@ $("#sendMessage").on("click",function(event){
 	//Grab User Input
 	userMessage = $("#messageArea").html() + $("#userNameMessage").attr("user-name") + ": " + $("#message").val().trim();
 
-	disconnectMessage = userMessage + $("#userNameMessage").attr("user-name") + " Disconnected from the chat";
+	disconnectMessage = userMessage + "\n" + $("#userNameMessage").attr("user-name") + ": Disconnected from the chat";
 
 	userNode = "players/" + $("#userNameMessage").attr("user-id");
 
@@ -215,6 +218,7 @@ $("#sendMessage").on("click",function(event){
 	if (userNode === "players/1"){
 		database.ref().onDisconnect().update({
 		  "players/1" : null,
+		  "turn": 1,
 		  "chat/message":disconnectMessage
 		});
 	}
@@ -222,21 +226,12 @@ $("#sendMessage").on("click",function(event){
 	{
 		database.ref().onDisconnect().update({
 		  "players/2" : null,
+		  "turn": 1,
 		  "chat/message":disconnectMessage
 		});
 	}
 
 });
-
-//Update the turn count
-function updateCount(){
-	turnCount++;
-
- 	//Set the turn
-	database.ref().update({
-		turn:turnCount
-	});
-}
 
 //Action when user selects one of the choices (Paper, Scissors or Rock)
 $(document).on("click",".user1choices",function(){
@@ -248,7 +243,7 @@ $(document).on("click",".user1choices",function(){
   	user1choice = $(this).text();
   	
 	//Updating turn to properly identiy first player's turn and also storing in firebase DB
-	turnCount = sessionStorage.getItem("turnCount");
+	turnCount = $("#userNameMessage").attr("user-id");
 	turnCount++;
 	database.ref().update({
 		turn:turnCount,
@@ -266,7 +261,7 @@ $(document).on("click",".user2choices",function(){
 	user2choice = $(this).text();
 
 	//Updating turn to properly identiy 2nd player's turn and also storing in firebase DB
-	turnCount = sessionStorage.getItem("turnCount");
+	turnCount = $("#userNameMessage").attr("user-id");
 	turnCount++;
 	database.ref().update({
 		turn:turnCount,
