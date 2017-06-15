@@ -1,6 +1,15 @@
+ body{
+	background: url("../images/rockpaperscissors.jpg");	
+	/*background-repeat: no-repeat;*/
+  	opacity: 0.2
+  	z-index: 99;
+}
+
  .jumbotron {
  	background-color: #20315A; 
  	color: white;
+ 	height: 180px;
+ 	opacity: 0.8;
  }
 
 #message {
@@ -9,17 +18,50 @@
 }
 
 .box {
-	border: 1px solid black;
+	border: 3px solid darkorange;
     height: 200px;
     margin: 10px;
+    font-size: 24px;
+    font-weight: 700;
 }
 
 .gameOptions {
-	border: 1px solid white;
-    height: 150px;
-    margin: 5px;
+    height: 115px;
+/*    margin: 5px;
+    padding:0px;*/
 }
 
-span {
-	/*text-align: center;*/
+#user1Title, #user1Score{
+	color: aqua;
+}
+
+#user2Title, #user2Score{
+	color: antiquewhite;
+}
+
+#user1Score, #user2Score{
+	font-size: 16px;
+}
+
+h3{
+	margin:17px;
+	color: crimson;
+	font-weight: 700;
+}
+
+h1{
+	padding-top: 20px;
+    font-weight: 700;
+    color: crimson;
+}
+
+#results{
+	color: indianred;
+	font-size: 24px;
+}
+
+.user1choices, .user2choices{
+	font-size:24px; 	
+	font-weight: 700;
+	color: indianred;
 }

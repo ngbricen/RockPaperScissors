@@ -35,12 +35,15 @@ $("#turnNameMessage").hide();
 // At the initial load and subsequent value changes, get a snapshot of the local data.
 // This function allows you to update your page in real-time when the firebase database changes.
 database.ref().on("value", function(snapshot) {
-	if (snapshot.val().turn === 0 ) {
+
+	//Hide Messages about turns if both players names have not yet been recorded
+	if (snapshot.child("turn").exists() && snapshot.val().turn === 0 ) {
 		$("#turnNameMessage").empty();
 	}
 	else
 	{
-	  	// If Firebase has a player stored (first player)
+	  	// If Firebase has a player stored (first player) get the players values
+	  	// whether or not they were already entered
 		if (snapshot.child("players/1").exists() ) {
 			user1Name = snapshot.val().players[1].name;
 			user1Choice = snapshot.val().players[1].choice;
@@ -48,18 +51,25 @@ database.ref().on("value", function(snapshot) {
 			user1Loss = snapshot.val().players[1].losses;
 			user1Draw = snapshot.val().players[1].draws;
 
+			//Display Player's Name and Score
 			$("#user1Title").text(user1Name);
 			$("#user1Score").text("Wins: " + user1Win + " Losses: " + user1Loss + " Draws: " + user1Draw);
 		}
 		else {
+			//If No players selected yet, display standard waiting message
 			$("#user1Title").text("Waiting For Player 1");  	
 		}
 
+		//Need to store the turn value into session to be able to properly
+		//flip between 1 player and the other to store proper values
+		//and also display right message in the right player's page
 		if (snapshot.child("turn").exists() ) {
 			turnCount = snapshot.val().turn;
 			sessionStorage.setItem("turnCount", turnCount);
 		}
 
+	  	// If Firebase has a 2nd player stored get the players values
+	  	// whether or not they were already entered
 		if (snapshot.child("players/2").exists() ) {
 			user2Name = snapshot.val().players[2].name;
 			user2Choice = snapshot.val().players[2].choice;
@@ -67,20 +77,23 @@ database.ref().on("value", function(snapshot) {
 			user2Loss = snapshot.val().players[2].losses;
 			user2Draw = snapshot.val().players[2].draws;
 
+			//Display Player's Name and Score and show turn's message
 			$("#user2Title").text(user2Name);
-
-			$("#turnNameMessage").show();
-			$("#turnNameMessage").text("Waiting for " + user1Name + " to choose!");
-			
 			$("#user2Score").text("Wins: " + user2Win + " Losses: " + user2Loss + " Draws: " + user2Draw);
+
+			$("#turnNameMessage").text("Waiting for " + user1Name + " to choose!");
+			$("#turnNameMessage").show();
 			
+			//Need to check the Current user Name value previously stored into session to be able to properly
+			//determine which player to add text and game choices to
+			//Also only display choice when it is the turn of the user
 			if (sessionStorage.getItem("currentUserName") === user1Name){		
 				if (turnCount === 1){
 					$("#turnNameMessage").text("It's Your Turn!");
 					$("#user1Options").empty();
-					$("#user1Options").append($("<h3><span class='user1choices'>Rock</span></h3>"));
-					$("#user1Options").append($("<h3><span class='user1choices'>Paper</span></h3>"));
-					$("#user1Options").append($("<h3><span class='user1choices'>Scissors</span></h3>"));			
+
+					//Display the Rock/Paper/Scissors Options
+					displayGameChoice("#user1Options","user1choices");		
 				}
 				else{
 					$("#turnNameMessage").text("Waiting for " + user2Name + " to choose!");		
@@ -90,17 +103,17 @@ database.ref().on("value", function(snapshot) {
 			if (sessionStorage.getItem("currentUserName") !== user1Name && turnCount === 2){
 				$("#turnNameMessage").text("It's Your Turn!");
 
-				$("#user2Options").append($("<h3><span class='user2choices'>Rock</span></h3>"));
-				$("#user2Options").append($("<h3><span class='user2choices'>Paper</span></h3>"));
-				$("#user2Options").append($("<h3><span class='user2choices'>Scissors</span></h3>"));			
+				//Display the Rock/Paper/Scissors Options
+				displayGameChoice("#user2Options","user2choices");
 			}
 		
 	  	}
 	  	else {
-
+	  		//If Player 2 does not exist display standard message
 	  		$("#user2Title").text("Waiting For Player 2");
 	  	}
 
+	  	//When both choices are available and both players have played their turn, we need to display results
 		if (snapshot.child("players/1/choice").exists() && snapshot.child("players/2/choice").exists() && turnCount === 3){
 			displayResults(user1Choice,user2Choice,user1Win,user1Loss,user1Draw, user2Win, user2Loss, user2Draw);
 		}
@@ -111,16 +124,15 @@ database.ref().on("value", function(snapshot) {
 });
 
 
+//Actions when users enter their names into the box to start the game
 $("#submitName").on("click",function(event){
 	event.preventDefault();
 
 	//Grab User Input
 	userName = $("#userName").val().trim();
 
-	// Clear sessionStorage
+	// Clear sessionStorage and store current user name to be able to display messages in the right window
     sessionStorage.clear();
-
-    // Store all content into sessionStorage
     sessionStorage.setItem("currentUserName", userName);
 
 
@@ -148,7 +160,7 @@ $("#submitName").on("click",function(event){
 		});
 
 		//Display Message;
-		$("#userNameMessage").text("Hi " + userName + "! You are player " + userNumber);
+		$("#userNameMessage").html("<h3> Hi " + userName + "! You are player " + userNumber + "</h3>");
 		
 		//Display the message and hide the Name entry Section
 		$("#userNameMessage").show();
@@ -165,65 +177,71 @@ $("#submitName").on("click",function(event){
 });
 
 
+//Update the turn count
 function updateCount(){
-	
 	turnCount++;
 
  	//Set the turn
 	database.ref().update({
 		turn:turnCount
 	});
-
 }
 
+//Action when user selects one of the choices (Paper, Scissors or Rock)
 $(document).on("click",".user1choices",function(){
+
+	//Diplay User's choice
 	$("#user1Options").empty();
-	$("#user1Options").append($("<h2>"+ $(this).text() +"</h2>"));
+	$("#user1Options").append($("<h1>"+ $(this).text() +"</h1>"));
 
   	user1choice = $(this).text();
   	
+	//Updating turn to properly identiy first player's turn and also storing in firebase DB
 	turnCount = sessionStorage.getItem("turnCount");
-
 	turnCount++;
-
 	database.ref().update({
 		turn:turnCount,
 		"players/1/choice":user1choice
 	});
+
 });
 
+//Action when user selects one of the choices (Paper, Scissors or Rock)
 $(document).on("click",".user2choices",function(){
+	//Diplay User's choice
 	$("#user2Options").empty();
-	$("#user2Options").append($("<h2>"+ $(this).text() +"</h2>"));
+	$("#user2Options").append($("<h1>"+ $(this).text() +"</h1>"));
 
 	user2choice = $(this).text();
 
+	//Updating turn to properly identiy 2nd player's turn and also storing in firebase DB
 	turnCount = sessionStorage.getItem("turnCount");
-
 	turnCount++;
-
 	database.ref().update({
 		turn:turnCount,
 		"players/2/choice":user2choice
 	});
 });
 
-function displayResults(a,b,w1,l1,d1,w2,l2,d2){
+//Display Results when both choices were entered
+function displayResults(choice1,choice2,w1,l1,d1,w2,l2,d2){
+		//Remove all Existing Messages
 		$("#turnNameMessage").empty();
-
 		$("#user1Options").empty();
 		$("#user2Options").empty();
 
-		$("#user1Options").append($("<h2>"+ a +"</h2>"));
-		$("#user2Options").append($("<h2>"+ b +"</h2>"));
+		//Display player's choices on both players' windows
+		$("#user1Options").append($("<h1>"+ choice1 +"</h1>"));
+		$("#user2Options").append($("<h1>"+ choice2 +"</h1>"));
 
-	if (a === b){
+	//Determine who the winner of the Paper/Scissors/Rock game is and display results
+	if (choice1 === choice2){
   			d1++;
   			d2++;
   			$("#results").append("<h1> THIS IS A DRAW </h1>");
 	}
 	else{
-		if ((a === "Rock" && b === "Scissors") || (a === "Scissors" && b === "Paper") || (a === "Paper" && b === "Rock")  ){
+		if ((choice1 === "Rock" && choice2 === "Scissors") || (choice1 === "Scissors" && choice2 === "Paper") || (choice1 === "Paper" && choice2 === "Rock")  ){
 			w1++;
 			l2++;
 			$("#results").append("<h1>" + user1Name + " WINS </h1>");
@@ -235,6 +253,11 @@ function displayResults(a,b,w1,l1,d1,w2,l2,d2){
 		}
 	}
 
+	//Display the win/loss/draw score of each user
+	$("#user1Score").text("Wins: " + w1 + " Losses: " + l1 + " Draws: " + d1);
+	$("#user2Score").text("Wins: " + w2 + " Losses: " + l2 + " Draws: " + d2);
+
+	//Store the results into firebase and updating turn back to 0 for the next player
 	database.ref().update({
 		"players/1/wins": w1,
 		"players/1/losses": l1,
@@ -245,9 +268,9 @@ function displayResults(a,b,w1,l1,d1,w2,l2,d2){
 		turn: 0
 	});
 		
-	$("#user1Score").text("Wins: " + w1 + " Losses: " + l1 + " Draws: " + d1);
-	$("#user2Score").text("Wins: " + w2 + " Losses: " + l2 + " Draws: " + d2);
 
+	//Display the results messages for 3 seconds, before clearing out the window and
+	//redisplaying options for user 1
 	setTimeout(function() { 
 		$("#results").empty();
 		$("#user1Options").empty();
@@ -255,9 +278,9 @@ function displayResults(a,b,w1,l1,d1,w2,l2,d2){
 
 		//Re-Display User 1 Options
 		if (sessionStorage.getItem("currentUserName") === user1Name){		
-			$("#user1Options").append($("<h3><span class='user1choices'>Rock</span></h3>"));
-			$("#user1Options").append($("<h3><span class='user1choices'>Paper</span></h3>"));
-			$("#user1Options").append($("<h3><span class='user1choices'>Scissors</span></h3>"));			
+
+			//Display the Rock/Paper/Scissors Options
+			displayGameChoice("#user1Options","user1choices");			
 		}
 
 		database.ref().update({
@@ -266,4 +289,10 @@ function displayResults(a,b,w1,l1,d1,w2,l2,d2){
 	}, 3000);
 	
 
+}
+
+function displayGameChoice(userDiv, userClass){
+	$(userDiv).append($("<h3><span class='" + userClass + "'>Rock</span></h3>"));
+	$(userDiv).append($("<h3><span class='" + userClass + "'>Paper</span></h3>"));
+	$(userDiv).append($("<h3><span class='" + userClass + "'>Scissors</span></h3>"));
 }

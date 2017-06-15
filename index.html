@@ -14,6 +14,7 @@
   </head>
   
   <body>
+    <!-- Container Begin -->
     <div class="container">
       <div class="jumbotron">
         <h1 class="text-center"><strong>Rock Paper Scissors</strong></h1>
@@ -27,7 +28,7 @@
         <div class="col-md-8" id="userNameSection">
           <form class="form-inline">
             <label class="sr-only" for="submitName">Name</label>
-            <input type="text" class="form-control" id="userName" placeholder="Enter Name">
+            <input type="text" class="form-control" id="userName" placeholder="Enter Name to Play">
             <button class="btn btn-default" id="submitName" type="submit">Start</button>
           </form> 
         </div>
@@ -38,15 +39,14 @@
         <h3 id="turnNameMessage"></h3>
       </div>
       <!-- Area for Message Sending End -->
-      <br>
-      
+
       <!-- Game Area Begin -->
       <div class="row">
-        <div class="col-md-1">
-        </div>
+        <!-- <div class="col-md-1">
+        </div> -->
 
         <div class="col-md-3 box text-center" id="user1">
-          <span id="user1Title">Waiting for Player 1</span>
+          <span id="user1Title"></span>
           <div id="user1Options" class="gameOptions">
           </div>
           <span id="user1Score"></span>
@@ -56,15 +56,13 @@
         </div>
 
         <div class="col-md-3 box text-center" id="user2">
-          <span id="user2Title">Waiting for Player 2</span>
+          <span id="user2Title"></span>
           <div id="user2Options"  class="gameOptions">
           </div>
           <span id="user2Score"></span>
         </div>        
       </div>
       <!-- Game Area End -->
-
-      <br>
 
       <!-- Area for Message Viewing Begin -->
       <div class="row">
@@ -76,9 +74,7 @@
         </div>
       </div>
       <!-- Area for Message Viewing End -->
-
       <br>
-      
       <!-- Area for Message Sending Begin -->
       <div class="row">
         <div class="col-md-2">
@@ -94,6 +90,7 @@
       <!-- Area for Message Sending End -->
 
     </div>
+    <!-- Container End -->
 
     <script src="https://www.gstatic.com/firebasejs/4.1.2/firebase.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous">
